@@ -118,10 +118,8 @@
 //     return { names, courses, datesIssued: dates, certificateIDs };
 //   }
 // }
-
-
-import { Wallet } from "ethers";
-import { Certificate__factory } from "./contracts/types"; // TypeChain generated types
+import { Wallet, Provider } from "ethers";
+import { Certificate, Certificate__factory } from "./contracts/types"; // TypeChain types
 
 export interface CertificateData {
   name: string;
@@ -130,20 +128,18 @@ export interface CertificateData {
 }
 
 export class CertGenerator {
-  private contract;
+  public contract: Certificate; // <-- typed contract
 
   constructor(private wallet: Wallet, contractAddress: string) {
     this.contract = Certificate__factory.connect(contractAddress, wallet);
   }
 
-  // Issue certificate
   async generateCertificate(recipient: string, data: CertificateData) {
     const tx = await this.contract.issueCertificate(data.name, data.course, data.certificateID);
     await tx.wait();
     return tx;
   }
 
-  // Get certificate by ID
   async getCertificate(certificateID: string) {
     const cert = await this.contract.getCertificate(certificateID);
     return {
@@ -154,15 +150,41 @@ export class CertGenerator {
     };
   }
 
-  // Get certificates by name
   async getCertificatesByName(name: string) {
     const certs = await this.contract.getCertificatesByName(name.trim().toLowerCase());
-
     return certs.map((c: any) => ({
       certificateID: c.certificateID,
       name: c.name,
       course: c.course,
       dateIssued: Number(c.dateIssued),
     }));
+  }
+
+  async getIssuedCertificates(provider: Provider) {
+    const events = await this.contract.queryFilter(this.contract.filters.CertificateIssued());
+    const issuedByAdmin = [];
+
+    for (const evt of events) {
+      const tx = await provider.getTransaction(evt.transactionHash);
+      if (!tx) continue;
+
+      // cast to EventLog to access args
+      const event = evt as unknown as {
+        args: { certificateID: string; name: string; course: string; dateIssued: bigint };
+        transactionHash: string;
+      };
+
+      if (tx.from.toLowerCase() === this.wallet.address.toLowerCase()) {
+        issuedByAdmin.push({
+          certificateID: event.args.certificateID,
+          name: event.args.name,
+          course: event.args.course,
+          dateIssued: new Date(Number(event.args.dateIssued) * 1000).toISOString(),
+          txHash: event.transactionHash,
+        });
+      }
+    }
+
+    return issuedByAdmin;
   }
 }
