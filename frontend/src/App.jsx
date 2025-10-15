@@ -2,13 +2,13 @@
 
 import React from 'react'
 import Cer_Res from './pages/Cer_Res'
-import Cert_Issue from './components/Cert_Veri'
 import Admin from './pages/Admin'
 import { Routes,Route } from 'react-router-dom'
 
 import Home from './pages/Home'
 import About from './pages/About'
 import Nav from './components/Nav'
+import { Footer } from './components/Footer'
 const App = () => {
   return (
     <>
@@ -22,7 +22,7 @@ const App = () => {
              <Route path='/admin' element={<Admin/>} />
              <Route path='/verify' element={<Cer_Res/>} />
          </Routes>
-        
+        <Footer/>
     </>
   )
 }

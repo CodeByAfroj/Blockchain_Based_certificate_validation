@@ -140,15 +140,26 @@ export class CertGenerator {
     return tx;
   }
 
-  async getCertificate(certificateID: string) {
-    const cert = await this.contract.getCertificate(certificateID);
-    return {
-      certificateID: cert[3],
-      name: cert[0],
-      course: cert[1],
-      dateIssued: Number(cert[2]),
-    };
+ async getCertificate(certificateID: string, provider?: Provider) {
+  const cert = await this.contract.getCertificate(certificateID);
+  const result = {
+    certificateID: cert[3],
+    name: cert[0],
+    course: cert[1],
+    dateIssued: Number(cert[2]),
+    txHash: "", // default
+  };
+
+  if (provider) {
+    const events = await this.contract.queryFilter(this.contract.filters.CertificateIssued(certificateID));
+    if (events.length > 0) {
+      result.txHash = events[0].transactionHash;
+    }
   }
+
+  return result;
+}
+
 
   async getCertificatesByName(name: string) {
     const certs = await this.contract.getCertificatesByName(name.trim().toLowerCase());

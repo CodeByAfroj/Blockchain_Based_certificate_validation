@@ -1,0 +1,41 @@
+/* In your global CSS file (e.g., index.css or App.css) */
+@keyframes gradient-slide {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.gradient-animate {
+  background-size: 200% 200%;
+  animation: gradient-slide 3s linear infinite;
+}
+
+
+@keyframes shimmer {
+  0% {
+    background-position: -150% 0;
+  }
+  100% {
+    background-position: 150% 0;
+  }
+}
+
+.text-shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(203, 213, 225, 0) 0%,   /* gray-200 transparent */
+    rgba(203, 213, 225, 0.5) 50%, /* gray-200 semi-transparent */
+    rgba(203, 213, 225, 0) 100%
+  );
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  color: transparent;
+  animation: shimmer 2.5s infinite;
+}
+

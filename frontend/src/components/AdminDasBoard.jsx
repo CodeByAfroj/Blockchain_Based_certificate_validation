@@ -14,8 +14,12 @@ import {
 import axios from "axios";
 import Cert_Veri from "./Cert_Veri";
 import { motion, AnimatePresence } from "framer-motion";
+import { useSelector } from "react-redux";
 
-export default function AdminDashBoard() {
+export default function AdminDashBoard({ darkMode: parentDarkMode }) {
+  const darkModeRedux = useSelector((state) => state.theme.darkMode);
+  const darkMode = parentDarkMode ?? darkModeRedux;
+
   const [certificates, setCertificates] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [stats, setStats] = useState({ total: 0, valid: 0, thisMonth: 0 });
@@ -73,7 +77,7 @@ export default function AdminDashBoard() {
   );
 
   return (
-    <div className="space-y-8 p-4 text-gray-900 dark:text-gray-100">
+    <div className={`${darkMode ? "bg-gray-900 text-gray-100" : "bg-gray-50 text-gray-900"} space-y-8 p-4 min-h-screen`}>
       {/* Stats Section */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {[
@@ -101,27 +105,29 @@ export default function AdminDashBoard() {
         ].map((card, i) => (
           <div
             key={i}
-            className="border rounded-xl p-4 shadow-sm bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700"
+            className={`border rounded-xl p-4 shadow-sm ${darkMode ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200"}`}
           >
             <div className="flex justify-between items-center pb-2">
               <h3 className="text-sm font-medium">{card.title}</h3>
               <card.icon className={`h-4 w-4 ${card.color}`} />
             </div>
             <div className="text-2xl font-bold">{card.value}</div>
-            <p className="text-xs text-gray-500 dark:text-gray-400">
-              {card.desc}
-            </p>
+            <p className={`${darkMode ? "text-gray-400" : "text-gray-500"} text-xs`}>{card.desc}</p>
           </div>
         ))}
       </div>
 
       {/* Tabs */}
-      <div className="flex border rounded-md overflow-hidden dark:border-gray-700">
+      <div className={`flex border rounded-md overflow-hidden ${darkMode ? "dark:border-gray-700" : ""}`}>
         <button
           className={`flex-1 p-2 text-center font-medium transition ${
             activeTab === "issue"
-              ? "bg-gray-200 dark:bg-gray-700"
-              : "hover:bg-gray-100 dark:hover:bg-gray-800"
+              ? darkMode
+                ? "bg-gray-700"
+                : "bg-gray-200"
+              : darkMode
+              ? "hover:bg-gray-800"
+              : "hover:bg-gray-100"
           }`}
           onClick={() => setActiveTab("issue")}
         >
@@ -130,8 +136,12 @@ export default function AdminDashBoard() {
         <button
           className={`flex-1 p-2 text-center font-medium transition ${
             activeTab === "manage"
-              ? "bg-gray-200 dark:bg-gray-700"
-              : "hover:bg-gray-100 dark:hover:bg-gray-800"
+              ? darkMode
+                ? "bg-gray-700"
+                : "bg-gray-200"
+              : darkMode
+              ? "hover:bg-gray-800"
+              : "hover:bg-gray-100"
           }`}
           onClick={() => setActiveTab("manage")}
         >
@@ -141,9 +151,9 @@ export default function AdminDashBoard() {
 
       {/* Issue Tab */}
       {activeTab === "issue" && (
-        <div className="border rounded-md shadow-sm p-4 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+        <div className={`border rounded-md shadow-sm p-4 ${darkMode ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200"}`}>
           <h3 className="text-lg font-semibold mb-2">Issue New Certificate</h3>
-          <Cert_Veri />
+          <Cert_Veri darkMode={darkMode} />
         </div>
       )}
 
@@ -153,17 +163,17 @@ export default function AdminDashBoard() {
           {/* Search + Refresh */}
           <div className="flex items-center justify-between gap-4 mb-2">
             <div className="relative flex-1 max-w-sm">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 ${darkMode ? "text-gray-400" : "text-gray-400"}`} />
               <input
                 type="text"
                 placeholder="Search certificates..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full border rounded-md pl-10 pr-2 py-1 bg-transparent dark:bg-gray-900 dark:border-gray-700"
+                className={`w-full border rounded-md pl-10 pr-2 py-1 ${darkMode ? "bg-gray-900 border-gray-700 text-gray-100 placeholder-gray-500" : "bg-white border-gray-200 text-gray-900 placeholder-gray-400"}`}
               />
             </div>
             <button
-              className="flex items-center gap-1 px-3 py-1 border rounded-md text-gray-700 dark:text-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800"
+              className={`flex items-center gap-1 px-3 py-1 border rounded-md transition ${darkMode ? "text-gray-200 border-gray-700 hover:bg-gray-800" : "text-gray-700 border-gray-200 hover:bg-gray-100"}`}
               onClick={fetchCertificates}
             >
               <RefreshCw className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`} />
@@ -175,15 +185,13 @@ export default function AdminDashBoard() {
           {isLoading ? (
             <div className="text-center py-8">Loading certificates...</div>
           ) : filteredCertificates.length === 0 ? (
-            <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-              {searchTerm
-                ? "No certificates match your search."
-                : "No certificates found."}
+            <div className={`${darkMode ? "text-gray-400" : "text-gray-500"} text-center py-8`}>
+              {searchTerm ? "No certificates match your search." : "No certificates found."}
             </div>
           ) : (
-            <div className="overflow-x-auto border rounded-md dark:border-gray-700 bg-white dark:bg-gray-800">
+            <div className={`overflow-x-auto border rounded-md ${darkMode ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200"}`}>
               <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                <thead className="bg-gray-100 dark:bg-gray-700">
+                <thead className={`${darkMode ? "bg-gray-700" : "bg-gray-100"}`}>
                   <tr>
                     <th className="px-4 py-2 text-left text-sm font-medium">Name</th>
                     <th className="px-4 py-2 text-left text-sm font-medium">Course</th>
@@ -191,19 +199,19 @@ export default function AdminDashBoard() {
                     <th className="px-4 py-2 text-left text-sm font-medium">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+                <tbody className={`${darkMode ? "divide-gray-700" : "divide-gray-200"}`}>
                   {filteredCertificates.map((cert) => (
-                    <tr key={cert.certificateID} className="hover:bg-gray-50 dark:hover:bg-gray-900">
+                    <tr key={cert.certificateID} className={`${darkMode ? "hover:bg-gray-900" : "hover:bg-gray-50"}`}>
                       <td className="px-4 py-2">{cert.name}</td>
                       <td className="px-4 py-2">{cert.course}</td>
                       <td className="px-4 py-2">{formatDate(cert.dateIssued)}</td>
                       <td className="px-4 py-2 flex gap-3 items-center">
                         <Eye
-                          className="h-4 w-4 cursor-pointer text-blue-600 hover:scale-110 transition"
+                          className={`h-4 w-4 cursor-pointer transition ${darkMode ? "text-blue-400" : "text-blue-600"}`}
                           onClick={() => setSelectedCertificate(cert)}
                         />
                         <Copy
-                          className="h-4 w-4 cursor-pointer text-gray-600 hover:scale-110 transition"
+                          className={`h-4 w-4 cursor-pointer transition ${darkMode ? "text-gray-400" : "text-gray-600"}`}
                           onClick={() => copyToClipboard(cert.certificateID)}
                         />
                       </td>
@@ -226,7 +234,7 @@ export default function AdminDashBoard() {
             exit={{ opacity: 0 }}
           >
             <motion.div
-              className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-full max-w-md border border-gray-200 dark:border-gray-700"
+              className={`p-6 rounded-lg shadow-lg w-full max-w-md border ${darkMode ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200"}`}
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
@@ -249,7 +257,7 @@ export default function AdminDashBoard() {
                 <p>
                   <span className="font-medium">Tx Hash:</span>{" "}
                   <span
-                    className="text-gray-200 cursor-pointer"
+                    className="cursor-pointer text-blue-400"
                     onClick={() => copyToClipboard(selectedCertificate.txHash)}
                   >
                     {selectedCertificate.txHash.slice(0, 15)}...
