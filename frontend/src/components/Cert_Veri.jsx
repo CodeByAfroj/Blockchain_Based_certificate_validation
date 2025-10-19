@@ -8,6 +8,7 @@ import jsPDF from "jspdf";
 export default function Cert_Veri() {
   const [name, setName] = useState("");
   const [course, setCourse] = useState("");
+  const [issuedBy, setIssuedBy] = useState("");
   const [certificateID, setCertificateID] = useState("");
   const [qrByID, setQrByID] = useState("");
   const certificateRef = useRef();
@@ -18,6 +19,7 @@ export default function Cert_Veri() {
       const res = await axios.post("http://localhost:5000/issue-certificate", {
         name,
         course,
+        issuedBy,
       });
       setCertificateID(res.data.certificateID);
       setQrByID(res.data.qrByID);
@@ -71,6 +73,13 @@ export default function Cert_Veri() {
           onChange={(e) => setCourse(e.target.value)}
         />
 
+         <input
+          className="w-full p-2 mb-3 rounded-md border border-gray-500 bg-gray-800 text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500"
+          placeholder="Issued By"
+          value={issuedBy}
+          onChange={(e) => setIssuedBy(e.target.value)}
+        />
+
         <button
           onClick={handleIssue}
           className="w-full bg-blue-600 hover:bg-blue-700 transition-all duration-200 text-white font-medium py-2 rounded-md"
@@ -102,8 +111,9 @@ export default function Cert_Veri() {
               <h1 className="text-5xl font-extrabold text-[#222] tracking-wide mb-2">
                 Certificate of Completion
               </h1>
+             
               <p className="italic text-lg mt-8 text-gray-600">
-                This is proudly presented to
+                This is proudly presented to 
               </p>
               <h2 className="text-4xl mt-6 font-semibold text-gray-900  underline decoration-[#d4af37]/70 decoration-2">
                 {name}
@@ -114,6 +124,9 @@ export default function Cert_Veri() {
               <h3 className="text-2xl font-medium text-gray-900 mt-6">
                 “{course}”
               </h3>
+               <h1 className="italic text-lg mt-5 text-gray-600">
+                Issued By {issuedBy}
+              </h1>
             </div>
 
             {/* Divider */}

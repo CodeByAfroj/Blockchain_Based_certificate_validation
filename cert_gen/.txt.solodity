@@ -1,0 +1,140 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+contract Certificate {
+    // Certificate structure
+    struct Cert {
+        string name;
+        string course;
+        uint256 dateIssued;
+        string certificateID;
+        string issuedBy;
+    }
+
+    // Endorsement structure
+    struct Endorsement {
+        string coInstructor; // Name or identifier of co-instructor
+        string comment;      // Comment or endorsement
+        uint256 timestamp;   // Time of endorsement
+    }
+
+    // Mappings
+    mapping(string => Cert) private certificates; // certificateID => Cert
+    mapping(string => string[]) private certificatesByName; // normalized name => certificateIDs
+    mapping(string => Endorsement[]) private endorsements; // certificateID => Endorsements
+
+    // Events
+    event CertificateIssued(
+        string certificateID,
+        string name,
+        string course,
+        uint256 dateIssued,
+        string issuedBy
+    );
+
+    event CertificateEndorsed(
+        string certificateID,
+        string coInstructor,
+        string comment,
+        uint256 timestamp
+    );
+
+    // Normalize string to lowercase
+    function normalize(string memory str) internal pure returns (string memory) {
+        bytes memory bStr = bytes(str);
+        for (uint i = 0; i < bStr.length; i++) {
+            if (bStr[i] >= 0x41 && bStr[i] <= 0x5A) {
+                bStr[i] = bytes1(uint8(bStr[i]) + 32); // A-Z -> a-z
+            }
+        }
+        return string(bStr);
+    }
+
+    // Issue a new certificate
+    function issueCertificate(
+        string memory _name,
+        string memory _course,
+        string memory _certificateID,
+        string memory _issuedBy
+    ) public {
+        require(bytes(certificates[_certificateID].certificateID).length == 0, "Certificate ID exists");
+
+        certificates[_certificateID] = Cert({
+            name: _name,
+            course: _course,
+            dateIssued: block.timestamp,
+            certificateID: _certificateID,
+            issuedBy: _issuedBy
+        });
+
+        string memory normalizedName = normalize(_name);
+        certificatesByName[normalizedName].push(_certificateID);
+
+        emit CertificateIssued(_certificateID, _name, _course, block.timestamp, _issuedBy);
+    }
+
+    // Add an endorsement
+    function endorseCertificate(
+        string memory _certificateID,
+        string memory _coInstructor,
+        string memory _comment
+    ) public {
+        require(bytes(certificates[_certificateID].certificateID).length != 0, "Certificate does not exist");
+
+        Endorsement memory newEndorsement = Endorsement({
+            coInstructor: _coInstructor,
+            comment: _comment,
+            timestamp: block.timestamp
+        });
+
+        endorsements[_certificateID].push(newEndorsement);
+
+        emit CertificateEndorsed(_certificateID, _coInstructor, _comment, block.timestamp);
+    }
+
+    // Get certificate + endorsements by certificate ID
+    function getCertificateWithEndorsements(string memory _certificateID)
+        public
+        view
+        returns (
+            string memory name,
+            string memory course,
+            uint256 dateIssued,
+            string memory certificateID,
+            string memory issuedBy,
+            Endorsement[] memory certificateEndorsements
+        )
+    {
+        Cert memory cert = certificates[_certificateID];
+        require(bytes(cert.certificateID).length != 0, "Certificate does not exist");
+
+        return (
+            cert.name,
+            cert.course,
+            cert.dateIssued,
+            cert.certificateID,
+            cert.issuedBy,
+            endorsements[_certificateID]
+        );
+    }
+
+    // Get certificates by name
+    function getCertificatesByName(string memory _name)
+        public
+        view
+        returns (Cert[] memory)
+    {
+        string memory normalizedName = normalize(_name);
+        string[] memory ids = certificatesByName[normalizedName];
+
+        if (ids.length == 0) {
+            return new Cert ;
+        }
+
+        Cert[] memory results = new Cert[](ids.length);
+        for (uint i = 0; i < ids.length; i++) {
+            results[i] = certificates[ids[i]];
+        }
+        return results;
+    }
+}

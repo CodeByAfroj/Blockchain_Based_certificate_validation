@@ -28,18 +28,21 @@ export declare namespace Certificate {
     course: string;
     dateIssued: BigNumberish;
     certificateID: string;
+    issuedBy: string;
   };
 
   export type CertStructOutput = [
     name: string,
     course: string,
     dateIssued: bigint,
-    certificateID: string
+    certificateID: string,
+    issuedBy: string
   ] & {
     name: string;
     course: string;
     dateIssued: bigint;
     certificateID: string;
+    issuedBy: string;
   };
 }
 
@@ -55,7 +58,7 @@ export interface CertificateInterface extends Interface {
 
   encodeFunctionData(
     functionFragment: "issueCertificate",
-    values: [string, string, string]
+    values: [string, string, string, string]
   ): string;
   encodeFunctionData(
     functionFragment: "getCertificate",
@@ -85,19 +88,22 @@ export namespace CertificateIssuedEvent {
     certificateID: string,
     name: string,
     course: string,
-    dateIssued: BigNumberish
+    dateIssued: BigNumberish,
+    issuedBy: string
   ];
   export type OutputTuple = [
     certificateID: string,
     name: string,
     course: string,
-    dateIssued: bigint
+    dateIssued: bigint,
+    issuedBy: string
   ];
   export interface OutputObject {
     certificateID: string;
     name: string;
     course: string;
     dateIssued: bigint;
+    issuedBy: string;
   }
   export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
   export type Filter = TypedDeferredTopicFilter<Event>;
@@ -149,7 +155,7 @@ export interface Certificate extends BaseContract {
   ): Promise<this>;
 
   issueCertificate: TypedContractMethod<
-    [_name: string, _course: string, _certificateID: string],
+    [_name: string, _course: string, _certificateID: string, _issuedBy: string],
     [void],
     "nonpayable"
   >;
@@ -157,11 +163,12 @@ export interface Certificate extends BaseContract {
   getCertificate: TypedContractMethod<
     [_certificateID: string],
     [
-      [string, string, bigint, string] & {
+      [string, string, bigint, string, string] & {
         name: string;
         course: string;
         dateIssued: bigint;
         certificateID: string;
+        issuedBy: string;
       }
     ],
     "view"
@@ -180,7 +187,7 @@ export interface Certificate extends BaseContract {
   getFunction(
     nameOrSignature: "issueCertificate"
   ): TypedContractMethod<
-    [_name: string, _course: string, _certificateID: string],
+    [_name: string, _course: string, _certificateID: string, _issuedBy: string],
     [void],
     "nonpayable"
   >;
@@ -189,11 +196,12 @@ export interface Certificate extends BaseContract {
   ): TypedContractMethod<
     [_certificateID: string],
     [
-      [string, string, bigint, string] & {
+      [string, string, bigint, string, string] & {
         name: string;
         course: string;
         dateIssued: bigint;
         certificateID: string;
+        issuedBy: string;
       }
     ],
     "view"
@@ -215,7 +223,7 @@ export interface Certificate extends BaseContract {
   >;
 
   filters: {
-    "CertificateIssued(string,string,string,uint256)": TypedContractEvent<
+    "CertificateIssued(string,string,string,uint256,string)": TypedContractEvent<
       CertificateIssuedEvent.InputTuple,
       CertificateIssuedEvent.OutputTuple,
       CertificateIssuedEvent.OutputObject

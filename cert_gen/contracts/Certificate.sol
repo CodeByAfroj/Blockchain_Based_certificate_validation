@@ -7,6 +7,7 @@ contract Certificate {
         string course;
         uint256 dateIssued;
         string certificateID;
+        string issuedBy;
     }
 
     mapping(string => Cert) private certificates; // certificateID => Cert
@@ -16,7 +17,8 @@ contract Certificate {
         string certificateID,
         string name,
         string course,
-        uint256 dateIssued
+        uint256 dateIssued,
+        string issuedBy
     );
 
     function normalize(string memory str) internal pure returns (string memory) {
@@ -28,11 +30,12 @@ contract Certificate {
         }
         return string(bStr);
     }
-
+    
     function issueCertificate(
         string memory _name,
         string memory _course,
-        string memory _certificateID
+        string memory _certificateID,
+        string memory _issuedBy
     ) public {
         require(bytes(certificates[_certificateID].certificateID).length == 0, "Certificate ID exists");
 
@@ -40,23 +43,24 @@ contract Certificate {
             name: _name,
             course: _course,
             dateIssued: block.timestamp,
-            certificateID: _certificateID
+            certificateID: _certificateID,
+            issuedBy: _issuedBy
         });
 
         string memory normalizedName = normalize(_name);
         certificatesByName[normalizedName].push(_certificateID);
 
-        emit CertificateIssued(_certificateID, _name, _course, block.timestamp);
+        emit CertificateIssued(_certificateID, _name, _course, block.timestamp, _issuedBy);
     }
 
     function getCertificate(string memory _certificateID)
         public
         view
-        returns (string memory name, string memory course, uint256 dateIssued, string memory certificateID)
+        returns (string memory name, string memory course, uint256 dateIssued, string memory certificateID, string memory issuedBy)
     {
         Cert memory cert = certificates[_certificateID];
         require(bytes(cert.certificateID).length != 0, "Certificate does not exist");
-        return (cert.name, cert.course, cert.dateIssued, cert.certificateID);
+        return (cert.name, cert.course, cert.dateIssued, cert.certificateID, cert.issuedBy);
     }
 
 function getCertificatesByName(string memory _name)

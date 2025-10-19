@@ -117,6 +117,7 @@ import dotenv from "dotenv";
 import { Wallet, JsonRpcProvider } from "ethers";
 import QRCode from "qrcode";
 import { CertGenerator, CertificateData } from "./certGenerator";
+import { hash } from "crypto";
 
 dotenv.config();
 const app = express();
@@ -130,6 +131,45 @@ const certGen = new CertGenerator(wallet, process.env.CONTRACT_ADDRESS!);
 const normalizeName = (name: string) => name.trim().toLowerCase();
 
 // Issue certificate
+// app.post("/issue-certificate", async (req, res) => {
+//   const data: CertificateData = req.body;
+//   if (!data.name || !data.course)
+//     return res.status(400).json({ error: "Missing certificate data" });
+
+//   const normalizedName = normalizeName(data.name);
+//   const certificateID = data.certificateID || `${normalizedName}-${Date.now()}`;
+
+//   try {
+//     const tx = await certGen.generateCertificate(wallet.address, {
+//       name: normalizedName,
+//       course: data.course,
+//       certificateID,
+//     });
+
+//     await tx.wait();
+
+//     const qrByID = await QRCode.toDataURL(
+//       `http://localhost:5000/verify-certificate?id=${encodeURIComponent(certificateID)}`
+//     );
+//     const qrByName = await QRCode.toDataURL(
+//       `http://localhost:5000/verify-certificate?name=${encodeURIComponent(normalizedName)}`
+//     );
+
+//     res.json({
+//       message: "Certificate issued!",
+//       certificateID,
+//       txHash: tx.hash,
+//       qrByID,
+//       qrByName,
+//     });
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ error: err });
+//   }
+// });
+
+
+// Issue certificate
 app.post("/issue-certificate", async (req, res) => {
   const data: CertificateData = req.body;
   if (!data.name || !data.course)
@@ -139,10 +179,11 @@ app.post("/issue-certificate", async (req, res) => {
   const certificateID = data.certificateID || `${normalizedName}-${Date.now()}`;
 
   try {
-    const tx = await certGen.generateCertificate(wallet.address, {
+    const tx = await certGen.generateCertificate({
       name: normalizedName,
       course: data.course,
       certificateID,
+      issuedBy: data.issuedBy, // ✅ required since Solidity expects it
     });
 
     await tx.wait();
@@ -163,9 +204,10 @@ app.post("/issue-certificate", async (req, res) => {
     });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: err });
+    res.status(500).json({ error: err instanceof Error ? err.message : err });
   }
 });
+
 
 // Verify certificate
 app.get("/verify-certificate", async (req, res) => {
@@ -188,6 +230,9 @@ app.get("/verify-certificate", async (req, res) => {
           name: cert.name,
           course: cert.course,
           dateIssued: new Date(cert.dateIssued * 1000).toISOString(),
+          issuedBy:cert.issuedBy,
+          txhash:cert.txHash
+          
         },
       });
     }
@@ -205,6 +250,8 @@ app.get("/verify-certificate", async (req, res) => {
           name: c.name,
           course: c.course,
           dateIssued: new Date(c.dateIssued * 1000).toISOString(),
+            issuedBy:c.issuedBy,
+          txhash:c.txHash
         })),
       });
     }
