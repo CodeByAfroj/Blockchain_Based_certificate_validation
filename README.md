@@ -86,9 +86,11 @@ npm install
 Create a `.env` file in the project root and add the following:
 
 ```ini
+
+Wallet_Address=<your_wallet_Address>
 PRIVATE_KEY=<your_wallet_private_key>
-INFURA_URL=<your_infura_rpc_url>
 CONTRACT_ADDRESS=<deployed_contract_address>
+INFURA_URL=http://127.0.0.1:7545
 PORT=5000
 ```
 ### 4 Run Ganache in separate terminal and do not close this terminal
