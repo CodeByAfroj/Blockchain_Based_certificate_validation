@@ -68,20 +68,20 @@ cert_gen/
 
 ## 🚀 Getting Started
 
-### 1️⃣ Clone the Repository
+### 1 Clone the Repository
 
 ```bash
 git clone <repo-url>
 cd cert_gen
 ```
 
-### 2️⃣ Install Dependencies
+### 2 Install Dependencies
 
 ```bash
 npm install
 ```
 
-### 3️⃣ Configure Environment Variables
+### 3 Configure Environment Variables
 
 Create a `.env` file in the project root and add the following:
 
@@ -91,16 +91,18 @@ INFURA_URL=<your_infura_rpc_url>
 CONTRACT_ADDRESS=<deployed_contract_address>
 PORT=5000
 ```
-
-### 4️⃣ Compile & Deploy the Smart Contract
+### 4 Run Ganache in separate terminal and do not close this terminal
+```
+npx ganache@7.9.1 --port 7545
+```
+### 5 Compile & Deploy the Smart Contract(use another terminal)
 
 ```bash
 truffle compile
 truffle migrate --network development
 ```
-
-### 5️⃣ Start the Backend Server
-
+###Before running the backend, make sure all the environment variables are set correctly
+### 6 Start the Backend Server
 ```bash
 npm run dev
 ```
