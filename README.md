@@ -68,6 +68,26 @@ cert_gen/
 
 ## 🚀 Getting Started
 
+### Clone the Repository
+
+```bash
+git clone <repo-url>
+```
+
+## frontend
+### 1 Clone the Repository
+
+```bash
+cd frontend
+```
+
+### 2 Install Dependencies
+
+```bash
+npm install --legacy-peer-deps
+```
+
+## Backend
 ### 1 Clone the Repository
 
 ```bash
