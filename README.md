@@ -87,6 +87,12 @@ cd frontend
 npm install --legacy-peer-deps
 ```
 
+### 3 Run Frontend
+
+```bash
+npm run dev
+```
+
 ## Backend
 ### 1 Clone the Repository
 
@@ -123,7 +129,7 @@ npx ganache@7.9.1 --port 7545
 truffle compile
 truffle migrate --network development
 ```
-###Before running the backend, make sure all the environment variables are set correctly
+#### Before running the backend, make sure all the environment variables are set correctly
 ### 6 Start the Backend Server
 ```bash
 npm run dev
