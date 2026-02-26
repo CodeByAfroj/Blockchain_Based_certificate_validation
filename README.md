@@ -8,7 +8,7 @@
 ## 🖥️ Homepage
 
 <p align="center">
-  <img src="https://jumpshare.com/share/ys7WbuOIccXFLzkBaWXw?b=1nX8xTjnni41GTZ0tCBe" width="800"/>
+  <img src="./frontend/src/assets/1772103053352-42b73a0f-8dce-4084-90e2-085c47540f68.png" width="800"/>
 </p>
 
 ---
