@@ -1,15 +1,20 @@
-# Blockchain Certificate Generator & Verifier
+# CertValidator - Blockchain Certificate Generator & Verifier
+
+This is a decentralized application (DApp) for issuing and verifying certificates on the blockchain.  
+It allows educational institutions and organizations to issue tamper-proof certificates and verify them via Certificate ID or Student Name.
+---
+
+## 🖥️ Homepage
+
+<p align="center">
+  <img src="https://image2url.com/r2/default/images/1772103053352-42b73a0f-8dce-4084-90e2-085c47540f68.png" width="800"/>
+</p>
+
+---
 
 **License:** MIT  
 **Node.js Version:** v22.17.1  
 **Solidity Version:** 0.8.0  
-
----
-
-## 📖 Description
-
-This is a decentralized application (DApp) for issuing and verifying certificates on the blockchain.  
-It allows educational institutions and organizations to issue tamper-proof certificates and verify them via Certificate ID or Student Name.
 
 ---
 
